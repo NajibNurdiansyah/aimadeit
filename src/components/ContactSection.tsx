@@ -1,7 +1,9 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
 import {
   AlertCircle,
   CheckCircle2,
+  FileText,
+  Film,
   Loader2,
   Mail,
   Paperclip,
@@ -22,15 +24,24 @@ interface ContactSectionProps {
 }
 
 interface AttachedFile {
+  file: File;
   name: string;
+  sizeBytes: number;
   sizeLabel: string;
+  isImage: boolean;
+  isVideo: boolean;
+  previewUrl: string;
 }
 
 interface FormErrors {
   fullName?: string;
   email?: string;
+  phone?: string;
   description?: string;
+  files?: string;
 }
+
+const MAX_TOTAL_ATTACHMENT_BYTES = 10 * 1024 * 1024; // 10 MB
 
 const INQUIRY_RECIPIENT_EMAIL =
   import.meta.env.VITE_CONTACT_EMAIL || 'najibnurd@gmail.com';
@@ -48,6 +59,7 @@ export default function ContactSection({
 }: ContactSectionProps) {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [company, setCompany] = useState('');
   const [service, setService] = useState(
     preselectedService || SERVICE_OPTIONS[0]
@@ -63,6 +75,13 @@ export default function ContactSection({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [needsActivation, setNeedsActivation] = useState(false);
+  const previewUrlsRef = useRef<string[]>([]);
+
+  useEffect(() => {
+    return () => {
+      previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, []);
 
   useEffect(() => {
     if (preselectedService) {
@@ -88,17 +107,39 @@ export default function ContactSection({
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files;
     if (!selected) return;
-    const nextFiles: AttachedFile[] = Array.from(selected).map((file) => ({
-      name: file.name,
-      sizeLabel: formatFileSize(file.size),
-    }));
+    const nextFiles: AttachedFile[] = Array.from(selected).map((file) => {
+      const previewUrl = URL.createObjectURL(file);
+      previewUrlsRef.current.push(previewUrl);
+      return {
+        file,
+        name: file.name,
+        sizeBytes: file.size,
+        sizeLabel: formatFileSize(file.size),
+        isImage: file.type.startsWith('image/'),
+        isVideo: file.type.startsWith('video/'),
+        previewUrl,
+      };
+    });
     setFiles((prev) => [...prev, ...nextFiles]);
+    setErrors((prev) => ({ ...prev, files: undefined }));
     e.target.value = '';
   };
 
   const removeFile = (index: number) => {
-    setFiles((prev) => prev.filter((_, idx) => idx !== index));
+    setFiles((prev) => {
+      const target = prev[index];
+      if (target) {
+        URL.revokeObjectURL(target.previewUrl);
+        previewUrlsRef.current = previewUrlsRef.current.filter(
+          (url) => url !== target.previewUrl
+        );
+      }
+      return prev.filter((_, idx) => idx !== index);
+    });
+    setErrors((prev) => ({ ...prev, files: undefined }));
   };
+
+  const totalAttachmentBytes = files.reduce((sum, f) => sum + f.sizeBytes, 0);
 
   const validate = (): FormErrors => {
     const nextErrors: FormErrors = {};
@@ -111,9 +152,20 @@ export default function ContactSection({
     } else if (!emailPattern.test(email.trim())) {
       nextErrors.email = 'Please enter a properly formatted email address.';
     }
+    const cleanedPhone = phone.trim();
+    if (!cleanedPhone) {
+      nextErrors.phone = 'Please enter your phone or WhatsApp number.';
+    } else if (cleanedPhone.replace(/[^0-9]/g, '').length < 7) {
+      nextErrors.phone =
+        'Please enter a valid phone number (at least 7 digits).';
+    }
     if (description.trim().length < 15) {
       nextErrors.description =
         'Please share at least a brief overview of your project (15+ characters).';
+    }
+    if (totalAttachmentBytes > MAX_TOTAL_ATTACHMENT_BYTES) {
+      nextErrors.files =
+        'Total attached files exceed 10 MB. Please remove or compress larger files.';
     }
     return nextErrors;
   };
@@ -123,11 +175,12 @@ export default function ContactSection({
     const bodyLines = [
       `Full Name: ${fullName.trim()}`,
       `Email: ${email.trim()}`,
+      `Phone / WhatsApp: ${phone.trim()}`,
       `Company / Brand: ${company.trim() || '-'}`,
       `Service Required: ${service}`,
       `Estimated Budget: ${budget}`,
       `Preferred Delivery Date: ${deliveryDate || 'Flexible'}`,
-      `Attached Files (reference names): ${
+      `Attached Files: ${
         files.length > 0
           ? files.map((f) => `${f.name} (${f.sizeLabel})`).join(', ')
           : 'None'
@@ -152,30 +205,43 @@ export default function ContactSection({
     setNeedsActivation(false);
 
     try {
+      const formData = new FormData();
+      formData.append(
+        '_subject',
+        `New AIMADEIT Inquiry — ${service} (${fullName.trim()})`
+      );
+      formData.append('_replyto', email.trim());
+      formData.append('_template', 'table');
+      formData.append('fullName', fullName.trim());
+      formData.append('email', email.trim());
+      formData.append('phone', phone.trim());
+      formData.append('company', company.trim() || 'Not provided');
+      formData.append('service', service);
+      formData.append('budget', budget);
+      formData.append('deliveryDate', deliveryDate || 'Flexible');
+      formData.append('description', description.trim());
+
+      files.forEach((item, idx) => {
+        const fieldName =
+          files.length === 1 ? 'attachment' : `attachment_${idx + 1}`;
+        formData.append(fieldName, item.file, item.name);
+      });
+
+      if (files.length > 0) {
+        formData.append(
+          'attachments_list',
+          files.map((f) => `${f.name} (${f.sizeLabel})`).join(', ')
+        );
+      }
+
       const response = await fetch(
         `https://formsubmit.co/ajax/${encodeURIComponent(INQUIRY_RECIPIENT_EMAIL)}`,
         {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
             Accept: 'application/json',
           },
-          body: JSON.stringify({
-            _subject: `New AIMADEIT Inquiry — ${service} (${fullName.trim()})`,
-            _replyto: email.trim(),
-            _template: 'table',
-            fullName: fullName.trim(),
-            email: email.trim(),
-            company: company.trim() || 'Not provided',
-            service,
-            budget,
-            deliveryDate: deliveryDate || 'Flexible',
-            description: description.trim(),
-            attachments:
-              files.length > 0
-                ? files.map((f) => `${f.name} (${f.sizeLabel})`).join(', ')
-                : 'None',
-          }),
+          body: formData,
         }
       );
 
@@ -210,8 +276,11 @@ export default function ContactSection({
   };
 
   const handleReset = () => {
+    files.forEach((item) => URL.revokeObjectURL(item.previewUrl));
+    previewUrlsRef.current = [];
     setFullName('');
     setEmail('');
+    setPhone('');
     setCompany('');
     setDeliveryDate('');
     setDescription('');
@@ -342,6 +411,12 @@ export default function ContactSection({
                       </dd>
                     </div>
                     <div className="flex justify-between gap-4">
+                      <dt className="text-[#B9BEC7]">Phone / WhatsApp</dt>
+                      <dd className="font-mono text-[#F5F1E8] tabular-nums">
+                        {phone}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-4">
                       <dt className="text-[#B9BEC7]">Service</dt>
                       <dd className="text-[#F5F1E8]">{service}</dd>
                     </div>
@@ -354,6 +429,15 @@ export default function ContactSection({
                         <dt className="text-[#B9BEC7]">Preferred Delivery</dt>
                         <dd className="font-mono text-[#F5F1E8]">
                           {deliveryDate}
+                        </dd>
+                      </div>
+                    )}
+                    {files.length > 0 && (
+                      <div className="flex justify-between gap-4 pt-1">
+                        <dt className="text-[#B9BEC7]">Attachments Sent</dt>
+                        <dd className="text-right font-mono text-[#00E5F2]">
+                          {files.length} file{files.length > 1 ? 's' : ''} (
+                          {formatFileSize(totalAttachmentBytes)})
                         </dd>
                       </div>
                     )}
@@ -420,22 +504,49 @@ export default function ContactSection({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                  <div>
-                    <label
-                      htmlFor="company"
-                      className="block text-xs font-semibold tracking-wide text-[#F5F1E8]"
-                    >
-                      Company / Brand Name
-                    </label>
-                    <input
-                      id="company"
-                      type="text"
-                      value={company}
-                      onChange={(e) => setCompany(e.target.value)}
-                      placeholder="Optional"
-                      className="mt-2 w-full rounded-lg border border-white/15 bg-[#090909] px-4 py-2.5 text-sm text-[#F5F1E8] placeholder:text-[#B9BEC7]/45 focus:border-[#00E5F2] focus:outline-none"
-                    />
+                <div className="space-y-5">
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    <div>
+                      <label
+                        htmlFor="phone"
+                        className="block text-xs font-semibold tracking-wide text-[#F5F1E8]"
+                      >
+                        Phone / WhatsApp Number{' '}
+                        <span className="text-[#D99A3E]">*</span>
+                      </label>
+                      <input
+                        id="phone"
+                        type="tel"
+                        required
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="+62 812-3456-7890"
+                        className="mt-2 w-full rounded-lg border border-white/15 bg-[#090909] px-4 py-2.5 text-sm text-[#F5F1E8] placeholder:text-[#B9BEC7]/45 focus:border-[#00E5F2] focus:outline-none"
+                      />
+                      {errors.phone && (
+                        <p className="mt-1.5 flex items-center gap-1.5 text-xs text-rose-400">
+                          <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                          <span>{errors.phone}</span>
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="company"
+                        className="block text-xs font-semibold tracking-wide text-[#F5F1E8]"
+                      >
+                        Company / Brand Name
+                      </label>
+                      <input
+                        id="company"
+                        type="text"
+                        value={company}
+                        onChange={(e) => setCompany(e.target.value)}
+                        placeholder="Optional"
+                        className="mt-2 w-full rounded-lg border border-white/15 bg-[#090909] px-4 py-2.5 text-sm text-[#F5F1E8] placeholder:text-[#B9BEC7]/45 focus:border-[#00E5F2] focus:outline-none"
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -525,9 +636,16 @@ export default function ContactSection({
 
                 {/* Reference Images / Files Attachment */}
                 <div>
-                  <span className="block text-xs font-semibold tracking-wide text-[#F5F1E8]">
-                    Reference Images or Files (Optional)
-                  </span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="block text-xs font-semibold tracking-wide text-[#F5F1E8]">
+                      Reference Images or Files (Optional)
+                    </span>
+                    <span className="font-mono text-[11px] text-[#B9BEC7]/70 tabular-nums">
+                      {files.length > 0
+                        ? `${formatFileSize(totalAttachmentBytes)} / 10 MB max`
+                        : 'Max 10 MB total'}
+                    </span>
+                  </div>
                   <label className="mt-2 flex min-h-11 cursor-pointer items-center justify-between rounded-lg border border-dashed border-white/20 bg-[#090909] px-4 py-3 text-xs text-[#B9BEC7] transition-colors hover:border-[#D99A3E]/60 hover:text-[#F5F1E8]">
                     <span className="flex items-center gap-2">
                       <Paperclip
@@ -548,26 +666,58 @@ export default function ContactSection({
                     />
                   </label>
 
+                  {errors.files && (
+                    <p className="mt-1.5 flex items-center gap-1.5 text-xs text-rose-400">
+                      <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                      <span>{errors.files}</span>
+                    </p>
+                  )}
+
                   {files.length > 0 && (
-                    <ul className="mt-2.5 space-y-1.5">
+                    <ul className="mt-2.5 space-y-2">
                       {files.map((file, idx) => (
                         <li
                           key={`${file.name}-${idx}`}
-                          className="flex items-center justify-between rounded-lg border border-white/10 bg-[#0D0D0D] px-3 py-2 text-xs"
+                          className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-[#0D0D0D] px-3 py-2 text-xs"
                         >
-                          <span className="truncate text-[#F5F1E8]">
-                            {file.name}{' '}
-                            <span className="ml-1 font-mono text-[#B9BEC7] tabular-nums">
-                              ({file.sizeLabel})
-                            </span>
-                          </span>
+                          <div className="flex min-w-0 items-center gap-3">
+                            {file.isImage ? (
+                              <img
+                                src={file.previewUrl}
+                                alt={file.name}
+                                className="h-10 w-10 shrink-0 rounded-md border border-white/15 object-cover"
+                              />
+                            ) : (
+                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-white/10 bg-[#141414] text-[#D99A3E]">
+                                {file.isVideo ? (
+                                  <Film
+                                    className="h-4 w-4 text-[#00E5F2]"
+                                    aria-hidden="true"
+                                  />
+                                ) : (
+                                  <FileText
+                                    className="h-4 w-4"
+                                    aria-hidden="true"
+                                  />
+                                )}
+                              </div>
+                            )}
+                            <div className="min-w-0">
+                              <p className="truncate font-medium text-[#F5F1E8]">
+                                {file.name}
+                              </p>
+                              <p className="font-mono text-[11px] text-[#B9BEC7] tabular-nums">
+                                {file.sizeLabel} · Attached as email file
+                              </p>
+                            </div>
+                          </div>
                           <button
                             type="button"
                             onClick={() => removeFile(idx)}
                             aria-label={`Remove ${file.name}`}
-                            className="ml-3 text-[#B9BEC7] transition-colors hover:text-rose-400 cursor-pointer"
+                            className="ml-2 shrink-0 text-[#B9BEC7] transition-colors hover:text-rose-400 cursor-pointer"
                           >
-                            <Trash2 className="h-3.5 w-3.5" />
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </li>
                       ))}
