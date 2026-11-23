@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import {
   AlertCircle,
   CheckCircle2,
@@ -9,13 +9,13 @@ import {
   Paperclip,
   Send,
   Trash2,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   BUDGET_OPTIONS,
   CONTACT_EMAILS,
   OPERATING_HOURS,
   SERVICE_OPTIONS,
-} from '../data/aimadeitData';
+} from "../data/aimadeitData";
 
 interface ContactSectionProps {
   preselectedService: string;
@@ -40,11 +40,28 @@ interface FormErrors {
   description?: string;
   files?: string;
 }
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
+async function uploadToCloudinary(file: File): Promise<string> {
+  const body = new FormData();
+  body.append("file", file);
+  body.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`,
+    { method: "POST", body },
+  );
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.secure_url) {
+    throw new Error(data?.error?.message || `Upload failed: ${file.name}`);
+  }
+  return data.secure_url as string;
+}
 const MAX_TOTAL_ATTACHMENT_BYTES = 10 * 1024 * 1024; // 10 MB
 
 const INQUIRY_RECIPIENT_EMAIL =
-  import.meta.env.VITE_CONTACT_EMAIL || 'najibnurd@gmail.com';
+  import.meta.env.VITE_CONTACT_EMAIL || "najibnurd@gmail.com";
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -57,18 +74,16 @@ export default function ContactSection({
   preselectedBudget,
   preselectedNote,
 }: ContactSectionProps) {
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [company, setCompany] = useState('');
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [company, setCompany] = useState("");
   const [service, setService] = useState(
-    preselectedService || SERVICE_OPTIONS[0]
+    preselectedService || SERVICE_OPTIONS[0],
   );
-  const [budget, setBudget] = useState(
-    preselectedBudget || BUDGET_OPTIONS[1]
-  );
-  const [deliveryDate, setDeliveryDate] = useState('');
-  const [description, setDescription] = useState(preselectedNote || '');
+  const [budget, setBudget] = useState(preselectedBudget || BUDGET_OPTIONS[1]);
+  const [deliveryDate, setDeliveryDate] = useState("");
+  const [description, setDescription] = useState(preselectedNote || "");
   const [files, setFiles] = useState<AttachedFile[]>([]);
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitted, setSubmitted] = useState(false);
@@ -115,14 +130,14 @@ export default function ContactSection({
         name: file.name,
         sizeBytes: file.size,
         sizeLabel: formatFileSize(file.size),
-        isImage: file.type.startsWith('image/'),
-        isVideo: file.type.startsWith('video/'),
+        isImage: file.type.startsWith("image/"),
+        isVideo: file.type.startsWith("video/"),
         previewUrl,
       };
     });
     setFiles((prev) => [...prev, ...nextFiles]);
     setErrors((prev) => ({ ...prev, files: undefined }));
-    e.target.value = '';
+    e.target.value = "";
   };
 
   const removeFile = (index: number) => {
@@ -131,7 +146,7 @@ export default function ContactSection({
       if (target) {
         URL.revokeObjectURL(target.previewUrl);
         previewUrlsRef.current = previewUrlsRef.current.filter(
-          (url) => url !== target.previewUrl
+          (url) => url !== target.previewUrl,
         );
       }
       return prev.filter((_, idx) => idx !== index);
@@ -144,52 +159,52 @@ export default function ContactSection({
   const validate = (): FormErrors => {
     const nextErrors: FormErrors = {};
     if (!fullName.trim()) {
-      nextErrors.fullName = 'Please enter your full name.';
+      nextErrors.fullName = "Please enter your full name.";
     }
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.trim()) {
-      nextErrors.email = 'Please provide a valid email address.';
+      nextErrors.email = "Please provide a valid email address.";
     } else if (!emailPattern.test(email.trim())) {
-      nextErrors.email = 'Please enter a properly formatted email address.';
+      nextErrors.email = "Please enter a properly formatted email address.";
     }
     const cleanedPhone = phone.trim();
     if (!cleanedPhone) {
-      nextErrors.phone = 'Please enter your phone or WhatsApp number.';
-    } else if (cleanedPhone.replace(/[^0-9]/g, '').length < 7) {
+      nextErrors.phone = "Please enter your phone or WhatsApp number.";
+    } else if (cleanedPhone.replace(/[^0-9]/g, "").length < 7) {
       nextErrors.phone =
-        'Please enter a valid phone number (at least 7 digits).';
+        "Please enter a valid phone number (at least 7 digits).";
     }
     if (description.trim().length < 15) {
       nextErrors.description =
-        'Please share at least a brief overview of your project (15+ characters).';
+        "Please share at least a brief overview of your project (15+ characters).";
     }
     if (totalAttachmentBytes > MAX_TOTAL_ATTACHMENT_BYTES) {
       nextErrors.files =
-        'Total attached files exceed 10 MB. Please remove or compress larger files.';
+        "Total attached files exceed 10 MB. Please remove or compress larger files.";
     }
     return nextErrors;
   };
 
   const buildMailtoHref = () => {
-    const subject = `Project Inquiry: ${service} — ${fullName.trim() || 'AIMADEIT Client'}`;
+    const subject = `Project Inquiry: ${service} — ${fullName.trim() || "AIMADEIT Client"}`;
     const bodyLines = [
       `Full Name: ${fullName.trim()}`,
       `Email: ${email.trim()}`,
       `Phone / WhatsApp: ${phone.trim()}`,
-      `Company / Brand: ${company.trim() || '-'}`,
+      `Company / Brand: ${company.trim() || "-"}`,
       `Service Required: ${service}`,
       `Estimated Budget: ${budget}`,
-      `Preferred Delivery Date: ${deliveryDate || 'Flexible'}`,
+      `Preferred Delivery Date: ${deliveryDate || "Flexible"}`,
       `Attached Files: ${
         files.length > 0
-          ? files.map((f) => `${f.name} (${f.sizeLabel})`).join(', ')
-          : 'None'
+          ? files.map((f) => `${f.name} (${f.sizeLabel})`).join(", ")
+          : "None"
       }`,
-      '',
-      'Project Description:',
+      "",
+      "Project Description:",
       description.trim(),
     ];
-    return `mailto:${INQUIRY_RECIPIENT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join('\n'))}`;
+    return `mailto:${INQUIRY_RECIPIENT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join("\n"))}`;
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -207,46 +222,55 @@ export default function ContactSection({
     try {
       const formData = new FormData();
       formData.append(
-        '_subject',
-        `New AIMADEIT Inquiry — ${service} (${fullName.trim()})`
+        "_subject",
+        `New AIMADEIT Inquiry — ${service} (${fullName.trim()})`,
       );
-      formData.append('_replyto', email.trim());
-      formData.append('_template', 'table');
-      formData.append('fullName', fullName.trim());
-      formData.append('email', email.trim());
-      formData.append('phone', phone.trim());
-      formData.append('company', company.trim() || 'Not provided');
-      formData.append('service', service);
-      formData.append('budget', budget);
-      formData.append('deliveryDate', deliveryDate || 'Flexible');
-      formData.append('description', description.trim());
-
-      files.forEach((item, idx) => {
-        const fieldName =
-          files.length === 1 ? 'attachment' : `attachment_${idx + 1}`;
-        formData.append(fieldName, item.file, item.name);
-      });
+      formData.append("_replyto", email.trim());
+      formData.append("_template", "table");
+      formData.append("fullName", fullName.trim());
+      formData.append("email", email.trim());
+      formData.append("phone", phone.trim());
+      formData.append("company", company.trim() || "Not provided");
+      formData.append("service", service);
+      formData.append("budget", budget);
+      formData.append("deliveryDate", deliveryDate || "Flexible");
+      formData.append("description", description.trim());
 
       if (files.length > 0) {
-        formData.append(
-          'attachments_list',
-          files.map((f) => `${f.name} (${f.sizeLabel})`).join(', ')
-        );
+        let urls: string[];
+        try {
+          urls = await Promise.all(
+            files.map((f) => uploadToCloudinary(f.file)),
+          );
+        } catch (err) {
+          setSubmitError(
+            err instanceof Error
+              ? `File upload failed: ${err.message}`
+              : "File upload failed. Please try again.",
+          );
+          return; // finally tetap menjalankan setIsSubmitting(false)
+        }
+        files.forEach((f, i) => {
+          formData.append(
+            `file_${i + 1}`,
+            `${f.name} (${f.sizeLabel}) — ${urls[i]}`,
+          );
+        });
       }
 
       const response = await fetch(
         `https://formsubmit.co/ajax/${encodeURIComponent(INQUIRY_RECIPIENT_EMAIL)}`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            Accept: 'application/json',
+            Accept: "application/json",
           },
           body: formData,
-        }
+        },
       );
 
       const data = await response.json().catch(() => ({}));
-      const isSuccess = data?.success === true || data?.success === 'true';
+      const isSuccess = data?.success === true || data?.success === "true";
 
       if (response.ok && isSuccess) {
         setSubmitted(true);
@@ -254,21 +278,21 @@ export default function ContactSection({
       }
 
       const serverMessage =
-        typeof data?.message === 'string' ? data.message : '';
-      if (serverMessage.toLowerCase().includes('activat')) {
+        typeof data?.message === "string" ? data.message : "";
+      if (serverMessage.toLowerCase().includes("activat")) {
         setNeedsActivation(true);
         setSubmitError(
-          `One-time activation required: FormSubmit just sent an activation link to ${INQUIRY_RECIPIENT_EMAIL}. Open that email and click "Activate Form", then send again.`
+          `One-time activation required: FormSubmit just sent an activation link to ${INQUIRY_RECIPIENT_EMAIL}. Open that email and click "Activate Form", then send again.`,
         );
       } else {
         setSubmitError(
           serverMessage ||
-            'Unable to deliver your inquiry automatically right now. Please retry or send via your email app below.'
+            "Unable to deliver your inquiry automatically right now. Please retry or send via your email app below.",
         );
       }
     } catch {
       setSubmitError(
-        'Could not reach the email delivery service. Please check your connection or send directly via your email app below.'
+        "Could not reach the email delivery service. Please check your connection or send directly via your email app below.",
       );
     } finally {
       setIsSubmitting(false);
@@ -278,12 +302,12 @@ export default function ContactSection({
   const handleReset = () => {
     files.forEach((item) => URL.revokeObjectURL(item.previewUrl));
     previewUrlsRef.current = [];
-    setFullName('');
-    setEmail('');
-    setPhone('');
-    setCompany('');
-    setDeliveryDate('');
-    setDescription('');
+    setFullName("");
+    setEmail("");
+    setPhone("");
+    setCompany("");
+    setDeliveryDate("");
+    setDescription("");
     setFiles([]);
     setErrors({});
     setSubmitError(null);
@@ -307,8 +331,8 @@ export default function ContactSection({
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-[#B9BEC7]">
             Have an idea in mind or need a creative partner for your next
-            campaign? Tell us what you want to create, and our studio will help you
-            explore the possibilities.
+            campaign? Tell us what you want to create, and our studio will help
+            you explore the possibilities.
           </p>
         </div>
 
@@ -364,7 +388,7 @@ export default function ContactSection({
                     <dt className="text-[#B9BEC7]">{row.day}</dt>
                     <dd
                       className={`font-mono text-xs tabular-nums ${
-                        row.closed ? 'text-[#B9BEC7]/60' : 'text-[#F5F1E8]'
+                        row.closed ? "text-[#B9BEC7]/60" : "text-[#F5F1E8]"
                       }`}
                     >
                       {row.hours}
@@ -391,7 +415,7 @@ export default function ContactSection({
                   Thank You for Contacting AIMADEIT!
                 </h3>
                 <p className="mt-3 max-w-lg text-sm leading-relaxed text-[#B9BEC7]">
-                  Your inquiry has been sent to{' '}
+                  Your inquiry has been sent to{" "}
                   <span className="font-mono text-[#F5D28A]">
                     {INQUIRY_RECIPIENT_EMAIL}
                   </span>
@@ -436,7 +460,7 @@ export default function ContactSection({
                       <div className="flex justify-between gap-4 pt-1">
                         <dt className="text-[#B9BEC7]">Attachments Sent</dt>
                         <dd className="text-right font-mono text-[#00E5F2]">
-                          {files.length} file{files.length > 1 ? 's' : ''} (
+                          {files.length} file{files.length > 1 ? "s" : ""} (
                           {formatFileSize(totalAttachmentBytes)})
                         </dd>
                       </div>
@@ -511,7 +535,7 @@ export default function ContactSection({
                         htmlFor="phone"
                         className="block text-xs font-semibold tracking-wide text-[#F5F1E8]"
                       >
-                        Phone / WhatsApp Number{' '}
+                        Phone / WhatsApp Number{" "}
                         <span className="text-[#D99A3E]">*</span>
                       </label>
                       <input
@@ -520,7 +544,7 @@ export default function ContactSection({
                         required
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        placeholder="+62 812-3456-7890"
+                        placeholder="+1 212-555-0199"
                         className="mt-2 w-full rounded-lg border border-white/15 bg-[#090909] px-4 py-2.5 text-sm text-[#F5F1E8] placeholder:text-[#B9BEC7]/45 focus:border-[#00E5F2] focus:outline-none"
                       />
                       {errors.phone && (
@@ -615,7 +639,8 @@ export default function ContactSection({
                     htmlFor="description"
                     className="block text-xs font-semibold tracking-wide text-[#F5F1E8]"
                   >
-                    Project Description <span className="text-[#D99A3E]">*</span>
+                    Project Description{" "}
+                    <span className="text-[#D99A3E]">*</span>
                   </label>
                   <textarea
                     id="description"
@@ -623,7 +648,7 @@ export default function ContactSection({
                     required
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Describe your creative goals, visual style, target platforms (e.g., Instagram Reels, commercial hero), and key deliverables."
+                    placeholder="Describe your creative goals, visual style, briefs, target platforms (e.g., Instagram Reels, commercial hero), and key deliverables."
                     className="mt-2 w-full rounded-lg border border-white/15 bg-[#090909] px-4 py-3 text-sm text-[#F5F1E8] placeholder:text-[#B9BEC7]/45 focus:border-[#00E5F2] focus:outline-none"
                   />
                   {errors.description && (
@@ -643,7 +668,7 @@ export default function ContactSection({
                     <span className="font-mono text-[11px] text-[#B9BEC7]/70 tabular-nums">
                       {files.length > 0
                         ? `${formatFileSize(totalAttachmentBytes)} / 10 MB max`
-                        : 'Max 10 MB total'}
+                        : "Max 10 MB total"}
                     </span>
                   </div>
                   <label className="mt-2 flex min-h-11 cursor-pointer items-center justify-between rounded-lg border border-dashed border-white/20 bg-[#090909] px-4 py-3 text-xs text-[#B9BEC7] transition-colors hover:border-[#D99A3E]/60 hover:text-[#F5F1E8]">
@@ -652,7 +677,7 @@ export default function ContactSection({
                         className="h-4 w-4 text-[#D99A3E]"
                         aria-hidden="true"
                       />
-                      <span>Attach moodboards, product photos, or briefs</span>
+                      <span>Product Photos</span>
                     </span>
                     <span className="font-semibold text-[#F5D28A]">
                       Browse Files
@@ -707,7 +732,7 @@ export default function ContactSection({
                                 {file.name}
                               </p>
                               <p className="font-mono text-[11px] text-[#B9BEC7] tabular-nums">
-                                {file.sizeLabel} · Attached as email file
+                                {file.sizeLabel} · Uploaded as secure link
                               </p>
                             </div>
                           </div>
@@ -731,8 +756,8 @@ export default function ContactSection({
                       role="alert"
                       className={`mb-4 rounded-lg border px-4 py-3 text-xs leading-relaxed ${
                         needsActivation
-                          ? 'border-[#D99A3E]/40 bg-[#D99A3E]/10 text-[#F5D28A]'
-                          : 'border-rose-500/35 bg-rose-500/10 text-rose-300'
+                          ? "border-[#D99A3E]/40 bg-[#D99A3E]/10 text-[#F5D28A]"
+                          : "border-rose-500/35 bg-rose-500/10 text-rose-300"
                       }`}
                     >
                       <p className="flex items-start gap-2">
@@ -745,7 +770,8 @@ export default function ContactSection({
                       >
                         <Mail className="h-3.5 w-3.5" aria-hidden="true" />
                         <span>
-                          Or send directly via Email App to {INQUIRY_RECIPIENT_EMAIL}
+                          Or send directly via Email App to{" "}
+                          {INQUIRY_RECIPIENT_EMAIL}
                         </span>
                       </a>
                     </div>
