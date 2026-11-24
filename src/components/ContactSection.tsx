@@ -677,7 +677,7 @@ export default function ContactSection({
                         className="h-4 w-4 text-[#D99A3E]"
                         aria-hidden="true"
                       />
-                      <span>Product Photos</span>
+                      <span>Product Photos, Brief and Videos</span>
                     </span>
                     <span className="font-semibold text-[#F5D28A]">
                       Browse Files

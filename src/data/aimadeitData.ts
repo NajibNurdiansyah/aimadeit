@@ -276,7 +276,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       '3 social media advertising formats',
     ],
     creativeStyle: 'Luxury · Cinematic · Premium',
-    image: 'src/assets/images/portfolio_future_fashion_1795415108085.jpg',
+    image: 'src/assets/images/noire campaign.jpg',
     imageAlt: 'Faceted dark amber and champagne-gold perfume bottle on basalt stone',
     aspectClass: 'aspect-[4/3]',
     featured: true,
@@ -295,7 +295,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       'Social media campaign visuals',
     ],
     creativeStyle: 'Editorial · Futuristic · High-Fashion',
-    image: 'src/assets/images/portfolio_virtual_ambassador_1795415106439.jpg',
+    image: 'src/assets/images/portfolio_future_fashion_1795415108085.jpg',
     imageAlt: 'High-fashion model in tailored charcoal and champagne-gold avant-garde outerwear',
     aspectClass: 'aspect-[4/3]',
   },
@@ -314,7 +314,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       'Promotional content concepts',
     ],
     creativeStyle: 'Photorealistic · Modern · Approachable',
-    image: 'https://drive.google.com/file/d/1MGw4ggr---NqgMq8su9DywQMTNlMZnY0/preview?pli=1',
+    image: 'https://drive.google.com/file/d/1Cv02oNNCDS2PgfLuzKHN3YojyZ4coKTY/preview',
     imageAlt: 'Photorealistic studio portrait of a virtual brand ambassador in a dark blazer',
     aspectClass: 'aspect-square',
   },
@@ -332,7 +332,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       'Social media cutdowns',
     ],
     creativeStyle: 'Futuristic · Cinematic · Technology-Driven',
-    image: 'https://drive.google.com/file/d/1hgIAu8EAHMZZFLifPwqYNoykzyIVj3KM/preview',
+    image: 'https://drive.google.com/file/d/1sUZL07mNBCVhbMKlfwExPc0Fyw9aR9n5/preview',
     imageAlt: 'Anodized black and brushed gold smart audio device floating with subtle cyan beam',
     aspectClass: 'aspect-video',
     featured: true,
@@ -351,7 +351,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       '1 consistent visual direction',
     ],
     creativeStyle: 'Minimalist · Engaging · Contemporary',
-    image: 'https://drive.google.com/file/d/1onsvRaJC_ZfLMJa6RWradJgMBFiPzHCU/preview',
+    image: 'https://drive.google.com/file/d/1IBalXsonld7dYcQqcQqaxcUgOZ-GNn-B/preview',
     imageAlt: 'Minimalist matte black vessels and brushed gold geometric props on dark stone',
     aspectClass: 'aspect-[4/3]',
   },
@@ -710,7 +710,7 @@ export const COMPLETED_PROJECTS: CompletedProject[] = [
       'Avant-garde tailored charcoal and champagne-gold outerwear showcased in architectural brutalist daylight.',
     deliverables: ['12 lookbook plates', '2 runway teasers', 'Instagram carousel kit'],
     creativeStyle: 'High-Fashion · Futuristic · Minimal',
-    image: '/src/assets/images/portfolio_future_fashion_1795415108085.jpg',
+    image: '/src/assets/images/Model_wearing_futuristic_wool_coat_64d786f1_2K.jpg',
   },
   {
     id: 'cp-03',
@@ -788,7 +788,7 @@ export const COMPLETED_PROJECTS: CompletedProject[] = [
       'Macro precision watch renders surrounded by warm tungsten reflections and dark slate surfaces.',
     deliverables: ['8 macro renders', '2 e-commerce banners', 'Print billboard master'],
     creativeStyle: 'Precision · Luxury · Macro',
-    image: '/src/assets/images/portfolio_luxury_fragrance_1795415107843.jpg',
+    image: '/src/assets/images/chronos.jpg',
   },
   {
     id: 'cp-08',
@@ -803,7 +803,7 @@ export const COMPLETED_PROJECTS: CompletedProject[] = [
       'Golden-hour desert editorial featuring AI fashion models in flowing linen and metallic trims.',
     deliverables: ['14 editorial stills', '4 story teasers', 'Lookbook PDF assets'],
     creativeStyle: 'Warm · Editorial · Coastal',
-    image: '/src/assets/images/portfolio_future_fashion_1795415108085.jpg',
+    image: '/src/assets/images/Model_walking_on_Mediterranean_t…_d2330132_2K.jpg',
   },
   {
     id: 'cp-09',
@@ -863,7 +863,7 @@ export const COMPLETED_PROJECTS: CompletedProject[] = [
       'Translucent glass dropper bottles framed by golden droplets and soft studio refraction.',
     deliverables: ['7 product stills', 'Amazon A+ visual set', 'Hero banner'],
     creativeStyle: 'Refined · Luminous · Clean',
-    image: '/src/assets/images/portfolio_luxury_fragrance_1795415107843.jpg',
+    image: '/src/assets/images/Lumiere_Serum_dropper_bottle_on_7ae96e96_2K.jpg',
   },
   {
     id: 'cp-13',
@@ -878,7 +878,7 @@ export const COMPLETED_PROJECTS: CompletedProject[] = [
       'Rain-slicked nocturnal city backdrops highlighting waterproof silhouettes and reflective seams.',
     deliverables: ['10 campaign portraits', '2 carousel ad sets', 'Lookbook cover'],
     creativeStyle: 'Nocturnal · Streetwear · Sharp',
-    image: '/src/assets/images/portfolio_future_fashion_1795415108085.jpg',
+    image: '/src/assets/images/Model_crossing_neon-lit_street_fcc7d8a9_2K.jpg',
   },
   {
     id: 'cp-14',
@@ -938,7 +938,7 @@ export const COMPLETED_PROJECTS: CompletedProject[] = [
       'Smoked oak and molten amber studio compositions celebrating small-batch barrel heritage.',
     deliverables: ['6 bottle hero shots', '3 social ad crops', 'Packaging mockup'],
     creativeStyle: 'Heritage · Amber · Dramatic',
-    image: '/src/assets/images/portfolio_luxury_fragrance_1795415107843.jpg',
+    image: '/src/assets/images/Whiskey_decanter_and_crystal_tum…_1cc9d2e8_2K.jpg',
   },
   {
     id: 'cp-18',
@@ -953,7 +953,7 @@ export const COMPLETED_PROJECTS: CompletedProject[] = [
       'Slow-motion fabric drape study paired with dramatic chiaroscuro studio illumination.',
     deliverables: ['15s teaser film', '8 editorial frames', 'VIP invite visual'],
     creativeStyle: 'Chiaroscuro · Silk · Opulent',
-    image: '/src/assets/images/portfolio_future_fashion_1795415108085.jpg',
+    image: '/src/assets/images/Woman_wearing_silk_evening_gown_53c6da61_2K.jpg',
   },
   {
     id: 'cp-19',
@@ -1013,7 +1013,7 @@ export const COMPLETED_PROJECTS: CompletedProject[] = [
       'Warm candlelight studio scenes on dark travertine with botanical shadow play.',
     deliverables: ['9 e-commerce photos', '4 seasonal banners', 'Email header art'],
     creativeStyle: 'Intimate · Warm · Organic',
-    image: '/src/assets/images/portfolio_luxury_fragrance_1795415107843.jpg',
+    image: '/src/assets/images/Saffron_and_cedar_scented_candle_e78d052d_2K.jpg',
   },
   {
     id: 'cp-23',
@@ -1028,7 +1028,7 @@ export const COMPLETED_PROJECTS: CompletedProject[] = [
       'Architectural acetate frames photographed with crisp cyan and amber studio gels.',
     deliverables: ['10 close-up portraits', '3 campaign posters', 'Story ad set'],
     creativeStyle: 'Editorial · Geometric · Bold',
-    image: '/src/assets/images/portfolio_future_fashion_1795415108085.jpg',
+    image: '/src/assets/images/Model_wearing_geometric_sunglasses_c6031143_2K.jpg',
   },
   {
     id: 'cp-24',
@@ -1088,7 +1088,7 @@ export const COMPLETED_PROJECTS: CompletedProject[] = [
       'Exploded switch renders and dramatic desk setups tailored for hardware enthusiasts.',
     deliverables: ['8 product renders', 'YouTube thumbnail pack', '2 launch banners'],
     creativeStyle: 'Hardware · Precision · Dark',
-    image: '/src/assets/images/portfolio_smart_tech_1795415107499.jpg',
+    image: '/src/assets/images/Titan_mechanical_keyboard_floating_87e2555d_2K.jpg',
   },
   {
     id: 'cp-28',
@@ -1103,7 +1103,7 @@ export const COMPLETED_PROJECTS: CompletedProject[] = [
       'High-altitude glacier environments showcasing insulated technical shells.',
     deliverables: ['10 outdoor hero shots', 'Retail poster kit', '3 ad variants'],
     creativeStyle: 'Rugged · Crisp · Cinematic',
-    image: '/src/assets/images/portfolio_future_fashion_1795415108085.jpg',
+    image: '/src/assets/images/Man_adjusting_Alpine_jacket_e7a885de_2K.jpg',
   },
   {
     id: 'cp-29',
@@ -1163,7 +1163,7 @@ export const COMPLETED_PROJECTS: CompletedProject[] = [
       'Sculptural 18k gold rings illuminated over black velvet and warm specular highlights.',
     deliverables: ['10 macro jewelry stills', '2 reel teasers', 'Boutique lookbook'],
     creativeStyle: 'Gold · Sculptural · Timeless',
-    image: '/src/assets/images/portfolio_luxury_fragrance_1795415107843.jpg',
+    image: '/src/assets/images/Diamond_necklace_and_earrings_di…_0276c5ae.jpg',
   },
 ];
 

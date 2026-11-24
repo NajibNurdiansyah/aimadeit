@@ -82,7 +82,7 @@ export default function HeroSection({ onStartProject }: HeroSectionProps) {
           >
             <div className="relative h-full min-h-[300px] overflow-hidden rounded-2xl border border-white/10 bg-[#141414] sm:min-h-[380px] lg:min-h-[460px]">
               <ResilientImage
-                src="/src/assets/images/hero_creative_lab_1795415107588.jpg"
+                src="/src/assets/images/logo aimadeit.jpg"
                 alt="AIMADEIT dark obsidian creative studio with metallic gold monolith and cinema lighting"
                 title="AIMADEIT AI Creative Lab Studio"
                 className="h-full w-full object-cover lg:h-full"
