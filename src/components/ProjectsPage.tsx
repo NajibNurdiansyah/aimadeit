@@ -410,11 +410,22 @@ export default function ProjectsPage({
                   className="relative block w-full overflow-hidden bg-[#090909] text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00E5F2] cursor-pointer"
                 >
                   <div className="aspect-[16/10] w-full overflow-hidden">
-                    <ResilientImage
-                      src={project.image}
-                      alt={project.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
+                    {project.embedUrl ? (
+                      <iframe
+                        src={project.embedUrl}
+                        title={project.title}
+                        tabIndex={-1}
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        className="pointer-events-none h-full w-full border-0"
+                      />
+                    ) : (
+                      <ResilientImage
+                        src={project.image}
+                        alt={project.title}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    )}
                   </div>
                   <div
                     aria-hidden="true"

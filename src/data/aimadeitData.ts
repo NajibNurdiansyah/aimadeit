@@ -725,8 +725,8 @@ export const COMPLETED_PROJECTS: CompletedProject[] = [
       'Consistent photorealistic digital spokesperson built for quarterly product keynotes, onboarding reels, and press visuals.',
     deliverables: ['Master character sheet', '16 pose & expression presets', '30s intro reel'],
     creativeStyle: 'Photorealistic · Approachable · Modern',
-    image: '/src/assets/images/portfolio_virtual_ambassador_1795415106439.jpg',
-    embedUrl: 'https://drive.google.com/file/d/1MGw4ggr---NqgMq8su9DywQMTNlMZnY0/preview?pli=1',
+    image: 'https://drive.google.com/file/d/1MGw4ggr---NqgMq8su9DywQMTNlMZnY0/preview',
+    embedUrl: 'https://drive.google.com/file/d/1MGw4ggr---NqgMq8su9DywQMTNlMZnY0/preview',
   },
   {
     id: 'cp-04',
@@ -741,7 +741,7 @@ export const COMPLETED_PROJECTS: CompletedProject[] = [
       'Anodized matte black smart speaker suspended in zero-gravity with kinetic cyan soundwave particles.',
     deliverables: ['30s launch commercial', '3 vertical cutdowns', '8 hero product stills'],
     creativeStyle: 'Sci-Fi · Kinetic · Precision',
-    image: '/src/assets/images/portfolio_smart_tech_1795415107499.jpg',
+    image: 'https://drive.google.com/file/d/1hgIAu8EAHMZZFLifPwqYNoykzyIVj3KM/preview',
     embedUrl: 'https://drive.google.com/file/d/1hgIAu8EAHMZZFLifPwqYNoykzyIVj3KM/preview',
   },
   {
@@ -773,7 +773,8 @@ export const COMPLETED_PROJECTS: CompletedProject[] = [
       'Atmospheric studio opener blending sculptural brushed brass geometry with volumetric cinema haze.',
     deliverables: ['45s studio manifesto film', '10 keyframe stills', 'Web hero loop'],
     creativeStyle: 'Architectural · Gold · Atmospheric',
-    image: '/src/assets/images/hero_creative_lab_1795415107588.jpg',
+    image: 'https://drive.google.com/file/d/1onsvRaJC_ZfLMJa6RWradJgMBFiPzHCU/preview',
+    embedUrl: 'https://drive.google.com/file/d/1onsvRaJC_ZfLMJa6RWradJgMBFiPzHCU/preview',
   },
   {
     id: 'cp-07',
