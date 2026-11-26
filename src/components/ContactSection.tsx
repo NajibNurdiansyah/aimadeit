@@ -61,7 +61,7 @@ async function uploadToCloudinary(file: File): Promise<string> {
 const MAX_TOTAL_ATTACHMENT_BYTES = 10 * 1024 * 1024; // 10 MB
 
 const INQUIRY_RECIPIENT_EMAIL =
-  import.meta.env.VITE_CONTACT_EMAIL || "najibnurd@gmail.com";
+  import.meta.env.VITE_CONTACT_EMAIL || "aimadeit2026@gmail.com";
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
