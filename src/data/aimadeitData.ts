@@ -604,16 +604,16 @@ export const OPERATING_HOURS: OperatingHour[] = [
 ];
 
 export const CONTACT_EMAILS = [
-  { label: 'General Inquiries', email: 'aimadeit@gmail.com' },
-  { label: 'Project Inquiries', email: 'projects@aimadeit.example' },
-  { label: 'Business Partnerships', email: 'partnerships@aimadeit.example' },
-  { label: 'Customer Support', email: 'support@aimadeit.example' },
+  { label: 'General Inquiries', email: 'aimadeit2026@gmail.com' },
+  { label: 'Project Inquiries', email: 'aimadeit2026@gmail.com' },
+  { label: 'Business Partnerships', email: 'aimadeit2026@gmail.com' },
+  { label: 'Customer Support', email: 'aimadeit2026@gmail.com' },
 ];
 
 export const SOCIAL_HANDLES = [
-  { platform: 'Instagram', handle: '@aimadeit.creative' },
-  { platform: 'TikTok', handle: '@aimadeit.creative' },
-  { platform: 'YouTube', handle: '@aimadeitcreativelab' },
+  { platform: 'Instagram', handle: '@aimadeit' },
+  { platform: 'TikTok', handle: '@aimadeit' },
+  { platform: 'YouTube', handle: '@aimadeit' },
   { platform: 'Facebook', handle: 'AIMADEIT AI Creative Lab' },
   { platform: 'LinkedIn', handle: 'AIMADEIT Creative Lab' },
 ];

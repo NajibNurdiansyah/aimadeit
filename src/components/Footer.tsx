@@ -116,13 +116,13 @@ export default function Footer({
             <ul className="mt-4 space-y-2 text-xs">
               <li>
                 <a
-                  href="mailto:hello@aimadeit.example"
+                  href="mailto:aimadeit2026@gmail.com"
                   className="font-mono text-[#F5F1E8] hover:text-[#00E5F2]"
                 >
-                  hello@aimadeit.example
+                  aimadeit2026@gmail.com
                 </a>
               </li>
-              <li className="font-mono text-[#B9BEC7]">www.aimadeit.example</li>
+              <li className="font-mono text-[#B9BEC7]">www.aimadeit.vercel.app</li>
             </ul>
 
             <h4 className="mt-6 text-xs font-semibold tracking-wider text-[#F5F1E8] uppercase">
